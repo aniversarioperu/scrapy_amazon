@@ -1,1 +1,1 @@
-``scrapy crawl precio -a item_id=8120340078 -o intro.json -t jsonlines``
+``scrapy crawl precio -a item_id=B0002AHQWS -o intro.json -t jsonlines``
