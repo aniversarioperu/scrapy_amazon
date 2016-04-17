@@ -12,9 +12,7 @@ class ScrapyAmazonItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     price = scrapy.Field()
-    condition = scrapy.Field()
-    seller = scrapy.Field()
-    delivery = scrapy.Field()
     title = scrapy.Field()
     date = scrapy.Field()
     url = scrapy.Field()
+    id = scrapy.Field()  # amazon id for this product

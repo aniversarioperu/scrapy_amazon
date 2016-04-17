@@ -32,4 +32,5 @@ class PrecioSpider(scrapy.Spider):
         item['date'] = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
         item['title'] = response.xpath("//span[@id='productTitle']/text()").extract_first()
         item['url'] = response.url
+        item['id'] = self.item_id
         yield item

@@ -15,3 +15,6 @@ NEWSPIDER_MODULE = 'scrapy_amazon.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapy_amazon (+http://www.yourdomain.com)'
+ITEM_PIPELINES = {
+    'scrapy_amazon.pipelines.ScrapyAmazonPipeline': 300,
+}
