@@ -17,3 +17,4 @@ class ScrapyAmazonItem(scrapy.Item):
     delivery = scrapy.Field()
     title = scrapy.Field()
     date = scrapy.Field()
+    url = scrapy.Field()

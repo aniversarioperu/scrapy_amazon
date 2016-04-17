@@ -1,37 +1,35 @@
 # -*- coding: utf-8 -*-
-from datetime import date
-import re
+import datetime
 
 import scrapy
+from scrapy.http import Request
+
 from scrapy_amazon.items import ScrapyAmazonItem
 
 
 class PrecioSpider(scrapy.Spider):
     name = "precio"
-    allowed_domains = ["www.amazon.co.uk"]
+    allowed_domains = ["amazon.co.uk", "amazon.com"]
     start_urls = (
-        'http://www.amazon.co.uk/',
+        'http://www.amazon.com/',
     )
 
     def __init__(self, item_id=''):
         self.item_id = item_id
-        url = self.start_urls[0] + "/gp/offer-listing/" + self.item_id 
-        url += "/ref=dp_olp_used?ie=UTF8&condition=used"
-        self.start_urls = [url]
+        listing_url = "{0}s/ref=nb_sb_noss_2?field-keywords={1}".format(self.start_urls[0],
+                                                                        self.item_id)
+        self.start_urls = [listing_url]
+        super(PrecioSpider, self).__init__()
 
     def parse(self, response):
-        sel = response.xpath
+        item_urls = response.xpath("//a[contains(@class, 's-access-detail-page')]/@href").extract()
+        for url in item_urls:
+            yield  Request(url, callback=self.parse_item)
 
-        condition = sel("//h3[contains(@class, 'olpCondition')]/text()").extract()[0].strip()
-        delivery = sel("//div[contains(@class, 'olpDeliveryColumn')]/ul/li/span/text()").extract()[1].strip()
-        today = date.today()
-
+    def parse_item(self, response):
         item = ScrapyAmazonItem()
-
-        item['title'] = sel("//title/text()").re("Buying Choices: (.+)")[0]
-        item['price'] = "gb" + sel("//span[contains(@class, 'olpOfferPrice')]/text()").re("[0-9]+\.?[0-9]*")[0]
-        item['seller'] = sel("//p[contains(@class, 'olpSellerName')]/span/a/text()").extract()[0]
-        item['condition'] = re.sub("\s+", " ", condition)
-        item['delivery'] = re.sub("\s+", " ", delivery)
-        item['date'] = date.strftime(today, "%Y-%m-%d")
+        item['price'] = response.xpath("//span[@id='priceblock_ourprice']/text()").extract_first()
+        item['date'] = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
+        item['title'] = response.xpath("//span[@id='productTitle']/text()").extract_first()
+        item['url'] = response.url
         yield item
